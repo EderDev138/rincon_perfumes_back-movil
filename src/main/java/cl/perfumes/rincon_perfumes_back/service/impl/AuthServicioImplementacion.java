@@ -1,15 +1,17 @@
 package cl.perfumes.rincon_perfumes_back.service.impl;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import cl.perfumes.rincon_perfumes_back.dto.request.LoginRequest;
 import cl.perfumes.rincon_perfumes_back.dto.response.LoginResponse;
 import cl.perfumes.rincon_perfumes_back.model.entidades.UsuarioEntidad;
 import cl.perfumes.rincon_perfumes_back.repository.UsuarioRepositorio;
-import cl.perfumes.rincon_perfumes_back.service.AuthServicio;
 import cl.perfumes.rincon_perfumes_back.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import cl.perfumes.rincon_perfumes_back.service.AuthServicio;
 
 @Service
 public class AuthServicioImplementacion implements AuthServicio {
@@ -19,6 +21,9 @@ public class AuthServicioImplementacion implements AuthServicio {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -31,7 +36,7 @@ public class AuthServicioImplementacion implements AuthServicio {
         UsuarioEntidad usuario = usuarioOpt.get();
 
         // Comparar contraseña directamente (solo para fines académicos)
-        if (!usuario.getContrasena().equals(request.getContrasena())) {
+        if (!passwordEncoder.matches(request.getContrasena(), usuario.getContrasena())) {
             return new LoginResponse(" Contraseña incorrecta", null, false, null);
         }
 

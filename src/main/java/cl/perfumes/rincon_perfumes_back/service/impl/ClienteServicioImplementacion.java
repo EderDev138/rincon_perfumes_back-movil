@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional; // <--- 1. Importar Collections
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import cl.perfumes.rincon_perfumes_back.model.entidades.ClienteEntidad;
@@ -29,6 +30,9 @@ public class ClienteServicioImplementacion implements ClienteServicio {
     @Autowired // <--- 2. Inyectar el repositorio
     private RolRepositorio rolRepositorio;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public ClienteEntidad guardar(ClienteEntidad cliente) {
@@ -42,6 +46,9 @@ public class ClienteServicioImplementacion implements ClienteServicio {
 
 
         // LÓGICA DE ASIGNACIÓN AUTOMÁTICA DE ROL
+
+        String claveEncriptada = passwordEncoder.encode(usuario.getContrasena());
+        usuario.setContrasena(claveEncriptada);
         
         if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
         
